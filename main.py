@@ -11,9 +11,16 @@ import sqlite3
 app = FastAPI()
 templates = Jinja2Templates(directory='templates')
 
+def check_credentials():
+    '''
+    returns True is user logged in
+    '''
+    # FIXME: implement this
+    return False
+
 @app.get('/', response_class=HTMLResponse)
 async def index(request: Request):
-    is_logged_in = True
+    is_logged_in = check_credentials()
 
     # extract username from database
     con = sqlite3.connect('twitter_clone.db')
@@ -37,7 +44,7 @@ async def index(request: Request):
 
 @app.get('/login', response_class=HTMLResponse)
 async def login(request: Request):
-    is_logged_in = True
+    is_logged_in = check_credentials()
     return templates.TemplateResponse(
         request=request,
         name='login.html',
