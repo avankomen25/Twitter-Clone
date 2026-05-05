@@ -2,7 +2,7 @@
 
 A simple Twitter-like web app built with FastAPI, Jinja2, and SQLite.
 
-## Screenshot
+## Screenshot Example
 
 ![Main Page](labsubmission.png)
 
@@ -10,12 +10,9 @@ A simple Twitter-like web app built with FastAPI, Jinja2, and SQLite.
 
 - View all messages on the home page, sorted newest first
 - Each message displays the text, timestamp, username, and age of the poster
-- Login/logout functionality via cookies
-- User and message creation pages
 - Styled with custom CSS served from static files
 
 
-## Setup
 ## Setup
 
 **1. Install dependencies:**
@@ -41,13 +38,11 @@ http://127.0.0.1:8080
 
 ## Routes
 
-| Route | Description |
-|-------|-------------|
-| `/` | Home page, displays all messages |
-| `/login` | Login with username and password |
-| `/logout` | Clears login cookies |
-| `/create_message` | Create a new message |
-| `/create_user` | Create a new user |
+- `/`
+- `/login`
+- `/logout`
+- `/create_message`
+- `/create_user`
 
 ## Dependencies
 
