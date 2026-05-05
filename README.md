@@ -16,18 +16,28 @@ A simple Twitter-like web app built with FastAPI, Jinja2, and SQLite.
 
 
 ## Setup
+## Setup
 
-1. Install dependencies:
+**1. Install dependencies:**
+
+```bash
 pip install fastapi uvicorn jinja2
+```
 
-2. Create the database:
+**2. Create the database:**
+```bash
 python db_create.py
+```
 
-3. Run the app:
+**3. Run the app:**
+```bash
 python main.py
+```
 
-4. Open in browser:
+**4. Open in browser:**
+```
 http://127.0.0.1:8080
+```
 
 ## Routes
 
