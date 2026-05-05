@@ -51,7 +51,7 @@ http://127.0.0.1:8080
 
 ## Dependencies
 
-- Python 3.x
+- Python
 - FastAPI
 - Uvicorn
 - Jinja2
