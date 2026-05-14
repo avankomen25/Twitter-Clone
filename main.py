@@ -5,11 +5,18 @@ Starts a hello world webserver.
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 import uvicorn
 import sqlite3
 
 app = FastAPI()
+app.mount('/static', StaticFiles(directory='static'), name='static')
 templates = Jinja2Templates(directory='templates')
+
+def get_db():
+    con = sqlite3.connect('twitter_clone.db')
+    con.row_factory = sqlite3.Row
+    return con
 
 def check_credentials(request: Request):
     '''
@@ -17,27 +24,31 @@ def check_credentials(request: Request):
     if not logged in, returns none
     '''
 
-    query_username = request.query_params.get('username')
-    query_password = request.query_params.get('password')
-    print('query_username=', query_username)
-    print('query_password=', query_password)
+    # query_username = request.query_params.get('username')
+    # query_password = request.query_params.get('password')
+    # print('query_username=', query_username)
+    # print('query_password=', query_password)
 
     cookie_username = request.cookies.get('username')
     cookie_password = request.cookies.get('password')
     print('cookie_username=', cookie_username)
     print('cookie_password=', cookie_password)
 
-    username = cookie_username
-    password = cookie_password
-
-    if username == 'Trump' and password == '12345':
-        print(f'Logged in as {username}')
-        return 'Trump'
-    else:
-        print('not logged in')
+    if not cookie_username or not cookie_password:
         return None
 
-    # FIXME: implement this
+    con = get_db()
+    cur = con.cursor()
+    cur.execute(
+        'SELECT username FROM users WHERE username = ? AND password = ?',
+        (cookie_username, cookie_password)
+    )
+    row = cur.fetchone()
+    con.close()
+ 
+    if row:
+        return row['username']
+    return None
 
 @app.get('/', response_class=HTMLResponse)
 async def index(request: Request):
@@ -47,9 +58,20 @@ async def index(request: Request):
     con = sqlite3.connect('twitter_clone.db')
     cur = con.cursor()
     sql = """
-    SELECT username FROM users WHERE id=1;
+    SELECT messages.message, messages.created_at, users.username, users.age
+    FROM messages
+    JOIN users ON messages.sender_id = users.id
+    ORDER BY messages.created_at DESC;
     """
-    # cur.execute(sql)
+    cur.execute(sql)
+    rows = cur.fetchall()
+    con.close()
+
+    messages = [
+        {'message': r[0], 'created_at': r[1], 'username': r[2], 'age': r[3]}
+        for r in rows
+    ]
+
     # for row in cur.fetchall():
         # username = row[0]
 
@@ -60,11 +82,12 @@ async def index(request: Request):
         context={
             'is_logged_in': check_credentials(request), 
             'username': check_credentials(request),
+            'messages': messages,
         }
     )
 
 @app.get('/logout', response_class=HTMLResponse)
-async def login(request: Request):
+async def logout(request: Request):
     response = templates.TemplateResponse(
         request=request,
         name='logout.html',
@@ -86,6 +109,26 @@ async def login(request: Request):
     response.set_cookie(key='username', value=request.query_params.get('username'))
     response.set_cookie(key='password', value=request.query_params.get('password'))
     return response
+
+@app.get('/create_message', response_class=HTMLResponse)
+async def create_message(request: Request):
+    return templates.TemplateResponse(
+        request=request, 
+        name='create_message.html',
+        context={
+            'is_logged_in': check_credentials(request)
+        }
+    )
+
+@app.get('/create_user', response_class=HTMLResponse)
+async def create_user(request: Request):
+    return templates.TemplateResponse(
+        request=request, 
+        name='create_user.html',
+        context={
+            'is_logged_in': check_credentials(request)
+        }
+    )
 
 
 if __name__ == '__main__':
