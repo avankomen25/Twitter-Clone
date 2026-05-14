@@ -3,5 +3,13 @@
 {% block content %}
 <h2>Main Page</h2>
 
-<p>username: {{username}} </p>
+<img src="/static/Logo_of_Twitter.png" alt="site image">
+
+{% for msg in messages %}
+<div>
+    <b>{{ msg.username }}</b> (age {{ msg.age }}) -- {{ msg.created_at }}<br>
+    {{ msg.message }}
+    <hr>
+</div>
+{% endfor %}
 {% endblock %}
