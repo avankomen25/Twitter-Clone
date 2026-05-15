@@ -387,5 +387,92 @@ async def search(request: Request):
         }
     )
 
+@app.get('/change_password', response_class=HTMLResponse)
+async def change_password_get(request: Request):
+    username = check_credentials(request)
+    if not username:
+        return RedirectResponse(url='/login', status_code=303)
+    return templates.TemplateResponse(
+        request=request,
+        name='change_password.html',
+        context={
+            'is_logged_in': username,
+            'error': None,
+            'success': None,
+        }
+    )
+
+@app.post('/change_password', response_class=HTMLResponse)
+async def change_password_post(request: Request):
+    username = check_credentials(request)
+    if not username:
+        return RedirectResponse(url='/login', status_code=303)
+
+    form = await request.form()
+    old_password = form.get('old_password', '')
+    new_password = form.get('new_password', '')
+    new_password2 = form.get('new_password2', '')
+
+    if not old_password or not new_password or not new_password2:
+        return templates.TemplateResponse(
+            request=request,
+            name='change_password.html',
+            context={
+                'is_logged_in': username,
+                'error': 'All fields are required.',
+                'success': None,
+            }
+        )
+
+    if new_password != new_password2:
+        return templates.TemplateResponse(
+            request=request,
+            name='change_password.html',
+            context={
+                'is_logged_in': username,
+                'error': 'New passwords do not match.',
+                'success': None,
+            }
+        )
+
+    con = get_db()
+    cur = con.cursor()
+    cur.execute(
+        'SELECT id FROM users WHERE username = ? AND password = ?',
+        (username, old_password)
+    )
+    row = cur.fetchone()
+
+    if row is None:
+        con.close()
+        return templates.TemplateResponse(
+            request=request,
+            name='change_password.html',
+            context={
+                'is_logged_in': username,
+                'error': 'Old password is incorrect.',
+                'success': None,
+            }
+        )
+
+    cur.execute(
+        'UPDATE users SET password = ? WHERE username = ?',
+        (new_password, username)
+    )
+    con.commit()
+    con.close()
+
+    response = templates.TemplateResponse(
+        request=request,
+        name='change_password.html',
+        context={
+            'is_logged_in': username,
+            'error': None,
+            'success': 'Password changed successfully.',
+        }
+    )
+    response.set_cookie(key='password', value=new_password, httponly=True)
+    return response
+
 if __name__ == '__main__':
     uvicorn.run("main:app", host='127.0.0.1', port=8080, reload=True)

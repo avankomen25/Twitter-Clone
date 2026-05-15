@@ -36,9 +36,8 @@
 
 {% if is_logged_in %}
 <div class="danger-zone">
-    <p>Danger zone:</p>
     <form method="post" action="/delete_account">
-        <input type="submit" value="Delete My Account" class="delete-btn">
+        <input type="submit" value="Delete My Account" class="delete-btn" onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.')">
     </form>
 </div>
 {% endif %}

@@ -13,7 +13,7 @@
 </form>
 
 {% if query %}
-<p>Results for "{{ query | e }}":</p>
+<p>Results for "{{ query | e }}": {{ messages | length }} found</p>
 {% for msg in messages %}
 <div class="message-card">
     <div class="message-meta">

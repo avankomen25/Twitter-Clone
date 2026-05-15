@@ -208,3 +208,14 @@ input.delete-btn:hover {
     border-top: 1px solid #ccc;
     padding-top: 20px;
 }
+
+.success {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
