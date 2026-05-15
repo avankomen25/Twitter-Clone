@@ -21,4 +21,26 @@
 {% else %}
 <p>No messages yet. <a href="/create_message">Post the first one!</a></p>
 {% endfor %}
+
+<a href="/json">JSON</a>
+
+<div class="pagination">
+    {% if has_prev %}
+    <a href="/?page={{ page - 1 }}">← Previous</a>
+    {% endif %}
+    <span>Page {{ page }}</span>
+    {% if has_next %}
+    <a href="/?page={{ page + 1 }}">Next →</a>
+    {% endif %}
+</div>
+
+{% if is_logged_in %}
+<div class="danger-zone">
+    <p>Danger zone:</p>
+    <form method="post" action="/delete_account">
+        <input type="submit" value="Delete My Account" class="delete-btn">
+    </form>
+</div>
+{% endif %}
+
 {% endblock %}

@@ -1,5 +1,5 @@
 '''
-Starts a hello world webserver.
+Starts a webserver for the website.
 '''
 
 from fastapi import FastAPI, Request
@@ -62,16 +62,28 @@ def check_credentials(request: Request):
 
 @app.get('/', response_class=HTMLResponse)
 async def index(request: Request):
-    # extract username from database
+    try:
+        page = int(request.query_params.get('page', 1))
+        if page < 1:
+            page = 1
+    except ValueError:
+        page = 1
+    offset = (page - 1) * 50
+
     con = get_db()
     cur = con.cursor()
-    sql = """
-    SELECT messages.id, messages.message, messages.created_at, users.username, users.age
-    FROM messages
-    JOIN users ON messages.sender_id = users.id
-    ORDER BY messages.created_at DESC;
-    """
-    cur.execute(sql)
+    
+    # get total message count for next button
+    cur.execute('SELECT COUNT(*) FROM messages')
+    total = cur.fetchone()[0]
+    
+    cur.execute('''
+        SELECT messages.id, messages.message, messages.created_at, users.username, users.age
+        FROM messages
+        JOIN users ON messages.sender_id = users.id
+        ORDER BY messages.created_at DESC
+        LIMIT 50 OFFSET ?
+    ''', (offset,))
     rows = cur.fetchall()
     con.close()
 
@@ -86,17 +98,15 @@ async def index(request: Request):
         for row in rows
     ]
 
-    # for row in cur.fetchall():
-        # username = row[0]
-
-    # create response
     return templates.TemplateResponse(
         request=request,
         name='index.html',
         context={
-            'is_logged_in': check_credentials(request), 
-            # 'username': check_credentials(request),
+            'is_logged_in': check_credentials(request),
             'messages': messages,
+            'page': page,
+            'has_next': (offset + 50) < total,
+            'has_prev': page > 1,
         }
     )
 
@@ -319,6 +329,63 @@ async def delete_message(message_id: int, request: Request):
     con.close()
 
     return RedirectResponse(url='/', status_code=303)
+
+@app.post('/delete_account')
+async def delete_account(request: Request):
+    username = check_credentials(request)
+    if not username:
+        return RedirectResponse(url='/login', status_code=303)
+
+    con = get_db()
+    cur = con.cursor()
+    cur.execute('DELETE FROM messages WHERE sender_id = (SELECT id FROM users WHERE username = ?)', (username,))
+    cur.execute('DELETE FROM users WHERE username = ?', (username,))
+    con.commit()
+    con.close()
+
+    response = RedirectResponse(url='/', status_code=303)
+    response.delete_cookie(key='username')
+    response.delete_cookie(key='password')
+    return response
+
+@app.get('/search', response_class=HTMLResponse)
+async def search(request: Request):
+    query = request.query_params.get('q', '').strip()
+    messages = []
+    
+    if query:
+        con = get_db()
+        cur = con.cursor()
+        cur.execute('''
+            SELECT messages.id, messages.message, messages.created_at, users.username, users.age
+            FROM messages
+            JOIN users ON messages.sender_id = users.id
+            WHERE messages.message LIKE LOWER(?)
+            ORDER BY messages.created_at DESC
+        ''', (f'%{query}%',))
+        rows = cur.fetchall()
+        con.close()
+
+        messages = [
+            {
+                'id': row['id'],
+                'message': row['message'],
+                'created_at': row['created_at'],
+                'username': row['username'],
+                'age': row['age'] if row['age'] is not None else 'N/A',
+            }
+            for row in rows
+        ]
+
+    return templates.TemplateResponse(
+        request=request,
+        name='search.html',
+        context={
+            'is_logged_in': check_credentials(request),
+            'messages': messages,
+            'query': query,
+        }
+    )
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host='127.0.0.1', port=8080, reload=True)

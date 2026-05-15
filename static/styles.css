@@ -182,3 +182,29 @@ input.delete-btn:hover {
     background: #C8102E;
     color: white;
 }
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    font-weight: bold;
+}
+
+.pagination a {
+    background: #C8102E;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+}
+
+.pagination a:hover {
+    background: #C69214;
+}
+
+.danger-zone {
+    margin-top: 40px;
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}
