@@ -87,7 +87,7 @@ insert into messages (sender_id,message) values
     (6, 'I''m an adult'),
     (6, 'SQL is the best!!'),
     (7, 'I''m an adult'),
-    (7, 'WTF is "SQL"?!  I thought you liked the snake thing. I didn'y know you liked the other one.');
+    (7, 'WTF is "SQL"?!  I thought you liked the snake thing. I didn''t know you liked the other one.');
 '''
 cur.execute(sql)
 con.commit()

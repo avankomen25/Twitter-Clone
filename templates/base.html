@@ -15,7 +15,6 @@
         <ul>
             <li><a href="/">{{ t.home }}</a></li>
             <li><a href="/search">{{ t.search }}</a></li>
-            <li><a href="/json">{{ t.json }}</a></li>
             {% if is_logged_in %}
             <li><a href="/create_message">{{ t.create_message }}</a></li>
             <li><a href="/change_password">{{ t.change_password }}</a></li>
@@ -30,5 +29,6 @@
         </ul>
         {% block content %}
         {% endblock %}
+        <p><i>an Andrew Van Komen production</i></p>
     </body>
 </html>
