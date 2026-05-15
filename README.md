@@ -22,6 +22,7 @@ A Twitter-like web app built with FastAPI, Jinja2, and SQLite.
 - CMC-themed CSS with light grey background and cardinal/gold colors
 - 200+ user accounts with 40,000+ randomly generated messages
 - SQL and HTML injection protected
+- Language Support for Egnlish, Spanish, and Tagalog
 ## Setup
  
 **1. Install dependencies:**
