@@ -1,5 +1,22 @@
 {% extends 'base.html' %}
-
+ 
 {% block content %}
-<h2>Create Message</h2>
+<h2>Post a Message</h2>
+ 
+{% if error %}
+<p class="error">{{ error | e }}</p>
+{% endif %}
+ 
+<form method="post" action="/create_message">
+    <table>
+        <tr>
+            <td><label for="message">Message:</label></td>
+            <td><textarea id="message" name="message" rows="4" cols="50" required></textarea></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Post"></td>
+        </tr>
+    </table>
+</form>
 {% endblock %}

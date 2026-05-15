@@ -2,4 +2,35 @@
 
 {% block content %}
 <h2>Create User</h2>
+
+{% if error %}
+<p class="error">{{ error | e }}</p>
+{% endif %}
+ 
+<form method="post" action="/create_user">
+    <table>
+        <tr>
+            <td><label for="username">Username:</label></td>
+            <td><input type="text" id="username" name="username" required></td>
+        </tr>
+        <tr>
+            <td><label for="password">Password:</label></td>
+            <td><input type="password" id="password" name="password" required></td>
+        </tr>
+        <tr>
+            <td><label for="password2">Confirm Password:</label></td>
+            <td><input type="password" id="password2" name="password2" required></td>
+        </tr>
+        <tr>
+            <td><label for="age">Age (optional):</label></td>
+            <td><input type="number" id="age" name="age" min="1" max="150"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Create Account"></td>
+        </tr>
+    </table>
+</form>
+ 
+<p>Already have an account? <a href="/login">Login here.</a></p>
 {% endblock %}

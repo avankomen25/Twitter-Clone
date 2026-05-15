@@ -1,13 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Login Page</h2>
+<h2>Login</h2>
 
-<form>
+{% if error %}
+<p class="error">{{ error | e }}</p>
+{% endif %}
+ 
+<form method="post" action="/login">
     <table>
-        <tr><td>username: </td> <td><input name="username"></td></tr>
-        <tr><td>password: </td> <td><input type="password" name="password"></td></tr>   
-        <tr><td>          </td> <td><input type="submit"></td></tr>
+        <tr>
+            <td><label for="username">Username:</label></td>
+            <td><input type="text" id="username" name="username" required></td>
+        </tr>
+        <tr>
+            <td><label for="password">Password:</label></td>
+            <td><input type="password" id="password" name="password" required></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Login"></td>
+        </tr>
     </table>
 </form>
+ 
+<p>Don't have an account? <a href="/create_user">Create one here.</a></p>
 {% endblock %}

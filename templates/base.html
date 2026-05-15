@@ -1,15 +1,22 @@
 <html>
     <head>
-        <title>Twitter Clone</title>
+        <title>The Social Network</title>
         <link rel="stylesheet" href="/static/styles.css">
+        <link rel="icon" type="image/png" href="/static/smalllogo.png">
     </head>
     <body>
-        <h1>Twitter Clone</h1>
+        <div class="site-header">
+            <h1>The Social Network</h1>
+            <div class="site-header-logos">
+                <img src="/static/smalllogo.png" alt="logo image">
+                <img src="/static/cmc_seal_rgb.png" alt="site image">
+            </div>
+        </div>
         <ul>
             <li><a href="/">Home</a></li>
             {% if is_logged_in %}
-            <li><a href="/logout">Logout</a></li>
-            <li><a href="/create_message">Create Message</a></li>
+            <li><a href="/create_message">Post Message</a></li>
+            <li><a href="/logout">Logout ({{ is_logged_in }})</a></li>
             {% else %}
             <li><a href="/login">Login</a></li>
             <li><a href="/create_user">Create User</a></li>

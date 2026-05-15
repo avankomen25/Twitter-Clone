@@ -85,3 +85,10 @@ insert into messages (sender_id,message) values
 '''
 cur.execute(sql)
 con.commit()
+
+# Required: at least one message with both a single quote ' and a double quote "
+cur.execute('''INSERT INTO messages (sender_id, message) VALUES (7, 'It''s called a "tweet" -- isn''t that funny?');''')
+con.commit()
+ 
+con.close()
+print('Database created successfully.')
