@@ -11,6 +11,14 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 import sqlite3
 
+from translations import TRANSLATIONS
+
+def get_lang(request: Request):
+    lang = request.cookies.get('lang', 'en')
+    if lang not in TRANSLATIONS:
+        lang = 'en'
+    return lang
+
 app = FastAPI()
 app.mount('/static', StaticFiles(directory='static'), name='static')
 templates = Jinja2Templates(directory='templates')
@@ -107,6 +115,7 @@ async def index(request: Request):
             'page': page,
             'has_next': (offset + 50) < total,
             'has_prev': page > 1,
+            't': TRANSLATIONS[get_lang(request)],
         }
     )
 
@@ -115,7 +124,10 @@ async def logout(request: Request):
     response = templates.TemplateResponse(
         request=request,
         name='logout.html',
-        context={'is_logged_in': None}
+        context={
+            'is_logged_in': None,
+            't': TRANSLATIONS[get_lang(request)],
+        }
     )
     response.delete_cookie(key='username')
     response.delete_cookie(key='password')
@@ -129,6 +141,7 @@ async def login_get(request: Request):
         context={
             'is_logged_in': check_credentials(request),
             'error': None,
+            't': TRANSLATIONS[get_lang(request)],
         }
     )
 
@@ -145,6 +158,7 @@ async def login_post(request: Request):
             context={
                 'is_logged_in': None,
                 'error': 'Please enter both username and password.',
+                't': TRANSLATIONS[get_lang(request)],
             }
         )
  
@@ -164,6 +178,7 @@ async def login_post(request: Request):
             context={
                 'is_logged_in': None,
                 'error': 'Invalid username or password.',
+                't': TRANSLATIONS[get_lang(request)],
             }
         )
  
@@ -180,6 +195,7 @@ async def create_user(request: Request):
         context={
             'is_logged_in': check_credentials(request),
             'error': None,
+            't': TRANSLATIONS[get_lang(request)],
         }
     )
 
@@ -198,6 +214,7 @@ async def create_user_post(request: Request):
             context={
                 'is_logged_in': None,
                 'error': 'Username and password are required.',
+                't': TRANSLATIONS[get_lang(request)],
             }
         )
  
@@ -208,6 +225,7 @@ async def create_user_post(request: Request):
             context={
                 'is_logged_in': None,
                 'error': 'Passwords do not match.',
+                't': TRANSLATIONS[get_lang(request)],
             }
         )
  
@@ -229,6 +247,7 @@ async def create_user_post(request: Request):
             context={
                 'is_logged_in': None,
                 'error': f'Username "{username}" is already taken.',
+                't': TRANSLATIONS[get_lang(request)],
             }
         )
     con.close()
@@ -250,6 +269,7 @@ async def create_message_get(request: Request):
         context={
             'is_logged_in': username,
             'error': None,
+            't': TRANSLATIONS[get_lang(request)],
         }
     )
 
@@ -269,6 +289,7 @@ async def create_message_post(request: Request):
             context={
                 'is_logged_in': username,
                 'error': 'Message cannot be empty.',
+                't': TRANSLATIONS[get_lang(request)],
             }
         )
  
@@ -384,6 +405,7 @@ async def search(request: Request):
             'is_logged_in': check_credentials(request),
             'messages': messages,
             'query': query,
+            't': TRANSLATIONS[get_lang(request)],
         }
     )
 
@@ -399,6 +421,7 @@ async def change_password_get(request: Request):
             'is_logged_in': username,
             'error': None,
             'success': None,
+            't': TRANSLATIONS[get_lang(request)],
         }
     )
 
@@ -421,6 +444,7 @@ async def change_password_post(request: Request):
                 'is_logged_in': username,
                 'error': 'All fields are required.',
                 'success': None,
+                't': TRANSLATIONS[get_lang(request)],
             }
         )
 
@@ -432,6 +456,7 @@ async def change_password_post(request: Request):
                 'is_logged_in': username,
                 'error': 'New passwords do not match.',
                 'success': None,
+                't': TRANSLATIONS[get_lang(request)],
             }
         )
 
@@ -452,6 +477,7 @@ async def change_password_post(request: Request):
                 'is_logged_in': username,
                 'error': 'Old password is incorrect.',
                 'success': None,
+                't': TRANSLATIONS[get_lang(request)],
             }
         )
 
@@ -469,9 +495,19 @@ async def change_password_post(request: Request):
             'is_logged_in': username,
             'error': None,
             'success': 'Password changed successfully.',
+            't': TRANSLATIONS[get_lang(request)],
         }
     )
     response.set_cookie(key='password', value=new_password, httponly=True)
+    return response
+
+@app.get('/set_lang/{lang}')
+async def set_lang(lang: str, request: Request):
+    if lang not in TRANSLATIONS:
+        lang = 'en'
+    referer = request.headers.get('referer', '/')
+    response = RedirectResponse(url=referer, status_code=303)
+    response.set_cookie(key='lang', value=lang)
     return response
 
 if __name__ == '__main__':

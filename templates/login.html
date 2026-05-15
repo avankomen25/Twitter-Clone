@@ -1,28 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Login</h2>
+<h2>{{ t.login_title }}</h2>
 
 {% if error %}
 <p class="error">{{ error | e }}</p>
 {% endif %}
- 
+
 <form method="post" action="/login">
     <table>
         <tr>
-            <td><label for="username">Username:</label></td>
+            <td><label for="username">{{ t.username }}:</label></td>
             <td><input type="text" id="username" name="username" required></td>
         </tr>
         <tr>
-            <td><label for="password">Password:</label></td>
+            <td><label for="password">{{ t.password }}:</label></td>
             <td><input type="password" id="password" name="password" required></td>
         </tr>
         <tr>
             <td></td>
-            <td><input type="submit" value="Login"></td>
+            <td><input type="submit" value="{{ t.login }}"></td>
         </tr>
     </table>
 </form>
- 
-<p>Don't have an account? <a href="/create_user">Create one here.</a></p>
+
+<p>{{ t.no_account }} <a href="/create_user">{{ t.create_here }}</a></p>
 {% endblock %}

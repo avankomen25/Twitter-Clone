@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
- 
+
 {% block content %}
-<h2>Logged Out</h2>
-<p>You have been successfully logged out.</p>
-<p><a href="/login">Log back in</a> or <a href="/">return to home</a>.</p>
+<h2>{{ t.logged_out }}</h2>
+<p>{{ t.logged_out_msg }}</p>
+<p><a href="/login">{{ t.log_back_in }}</a> or <a href="/">{{ t.return_home }}</a>.</p>
 {% endblock %}

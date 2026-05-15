@@ -1,43 +1,41 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Recent Posts</h2>
+<h2>{{ t.recent_posts }}</h2>
 
 {% for msg in messages %}
 <div class="message-card">
     <div class="message-meta">
         <img src="https://robohash.org/{{ msg.username | e }}?size=40x40" alt="{{ msg.username | e }}">
         <span class="username">{{ msg.username | e }}</span>
-        {% if msg.age != 'N/A' %}<span class="age">age {{ msg.age }}</span>{% endif %}
+        {% if msg.age != 'N/A' %}<span class="age">{{ t.age }} {{ msg.age }}</span>{% endif %}
         <span class="timestamp">{{ msg.created_at }}</span>
         {% if is_logged_in == msg.username %}
         <form method="post" action="/delete_message/{{ msg.id }}" style="display:inline;">
-            <input type="submit" value="Delete" class="delete-btn">
+            <input type="submit" value="{{ t.delete }}" class="delete-btn">
         </form>
         {% endif %}
     </div>
     <div class="message-body">{{ msg.message | e | make_links | safe }}</div>
 </div>
 {% else %}
-<p>No messages yet. <a href="/create_message">Post the first one!</a></p>
+<p>{{ t.no_messages }} <a href="/create_message">{{ t.post_first }}</a></p>
 {% endfor %}
-
-<a href="/json">JSON</a>
 
 <div class="pagination">
     {% if has_prev %}
-    <a href="/?page={{ page - 1 }}">← Previous</a>
+    <a href="/?page={{ page - 1 }}">{{ t.previous }}</a>
     {% endif %}
-    <span>Page {{ page }}</span>
+    <span>{{ t.page }} {{ page }}</span>
     {% if has_next %}
-    <a href="/?page={{ page + 1 }}">Next →</a>
+    <a href="/?page={{ page + 1 }}">{{ t.next }}</a>
     {% endif %}
 </div>
 
 {% if is_logged_in %}
 <div class="danger-zone">
     <form method="post" action="/delete_account">
-        <input type="submit" value="Delete My Account" class="delete-btn" onclick="return confirm('Are you sure you want to delete your account? This cannot be undone.')">
+        <input type="submit" value="{{ t.delete_account }}" class="delete-btn" onclick="return confirm('{{ t.delete_confirm }}')">
     </form>
 </div>
 {% endif %}
