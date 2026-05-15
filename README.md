@@ -4,7 +4,7 @@ A Twitter-like web app built with FastAPI, Jinja2, and SQLite.
  
 ## Screenshot
  
-![Main Page](screenshot.png)
+![Main Page](static/example.png)
  
 ## Features
  
